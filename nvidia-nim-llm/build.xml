@@ -20,12 +20,12 @@
         </path>
         <mkdir dir="${build.dir}" />
         <mkdir dir="${dist.dir}" />
-        <javac debug="true" destdir="${build.dir}" classpathref="lib.path.id" encoding="utf-8" includeantruntime="false">
+        <javac debug="true" destdir="${build.dir}" target="1.8" classpathref="lib.path.id" encoding="utf-8" includeantruntime="false">
             <compilerarg value="-Xlint:all" />
             <src>
-                <pathelement location="java-llms/custom-llm" />
+                <pathelement location="java-llms/nvidiaNimsLLM" />
             </src>
         </javac>
-        <jar destfile="${dist.dir}/customllm.jar" basedir="${build.dir}" />
+        <jar destfile="${dist.dir}/nvidiaNIMSPlugin.jar" basedir="${build.dir}" />
     </target>
 </project>

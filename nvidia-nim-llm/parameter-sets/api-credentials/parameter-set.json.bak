@@ -1,7 +1,7 @@
 {
     "meta" : {
-        "label": "GPT API Keys",
-        "description": "Define a preset that DSS users can use to authenticate themselves on the custom endpoint. The plugin will work with per-user credentials.",
+        "label": "NVIDIA NIMS API Key",
+        "description": "Define a preset that DSS users can use to authenticate themselves for NIMS. The plugin will work with per-user credentials.",
         "icon": "icon-cloud"
     },
     "defaultDefinableInline": false,

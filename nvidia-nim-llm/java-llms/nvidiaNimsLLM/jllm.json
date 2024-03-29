@@ -15,7 +15,7 @@
             "name": "endpoint_url",
             "label": "Endpoint URL",
             "type": "STRING",
-            "defaultValue": "https://customLLM/api/openai",
+            "defaultValue": "https://integrate.api.nvidia.com/v1/",
             "description": "Assumes '/chat/completion or embedding' endpoint. Don't include /chat/completion at the end of this URL. eg: https://myCustomLLMEndpointServer.mythical.com/gpt/v2",
             "mandatory": true
         },

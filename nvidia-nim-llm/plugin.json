@@ -1,10 +1,10 @@
 {
-    "id": "custom-gpt-llm",
+    "id": "nvidia-nims-llm",
     "version": "0.0.1",
     "meta": {
-        "label": "Custom LLM",
-        "description": "Connect to an private LLM",
-        "author": "agugliciello",
+        "label": "NVIDIA NIMS LLM",
+        "description": "Connect to your NVIDIA LLMs",
+        "author": "sgaur",
         "icon": "icon-cloud",
         "tags": [], 
         "url": "",

@@ -35,8 +35,8 @@ import com.dataiku.dip.utils.JF;
 import com.dataiku.dip.utils.JF.ObjectBuilder;
 import com.google.gson.*;
 
-public class customLLMPlugin extends CustomLLMClient {
-    public customLLMPlugin() {
+public class nvidiaNIMSPlugin extends CustomLLMClient {
+    public nvidiaNIMSPlugin() {
     }
 
     private String endpointUrl;
@@ -90,7 +90,7 @@ public class customLLMPlugin extends CustomLLMClient {
                 HttpGet get = new HttpGet(path);
                 setAdditionalHeadersInRequest(get);
                 get.addHeader("Content-Type", "application/json");
-                get.addHeader("CustomAPIKey", access_token);
+                get.addHeader("Authorization", access_token);
                 return get;
             }
 
@@ -99,7 +99,7 @@ public class customLLMPlugin extends CustomLLMClient {
                 HttpPost post = new HttpPost(path);
                 setAdditionalHeadersInRequest(post);
                 post.addHeader("Content-Type", "application/json");
-                post.addHeader("CustomAPIKey", access_token);
+                post.addHeader("Authorization", access_token);
                 return post;
 
             }
@@ -222,7 +222,7 @@ public class customLLMPlugin extends CustomLLMClient {
 
         logger.info("Raw Chat chat completion: " + JSON.pretty(ob.get()));
 
-        String endpoint = endpointUrl + "/" + model + "/chat/completions";
+        String endpoint = endpointUrl + "/chat/completions";
         logger.info("posting to Chat at: " + endpoint);
         RawChatCompletionResponse rcr = client.postObjectToJSON(endpoint, networkSettings.queryTimeoutMS,
                 RawChatCompletionResponse.class, ob.get());
@@ -240,23 +240,7 @@ public class customLLMPlugin extends CustomLLMClient {
     }
 
     public SimpleEmbeddingResponse embed(String model, String text) throws IOException {
-        String endpoint = endpointUrl + "/" + model + "/embeddings";
-
-        ObjectBuilder ob = JF.obj().with("input", text).with("model", model);
-
-        logger.info("raw embedding query: " + JSON.json(ob.get()));
-        OpenAIEmbeddingResponse rcr = client.postObjectToJSON(endpoint, networkSettings.queryTimeoutMS,
-                OpenAIEmbeddingResponse.class, ob.get());
-        logger.info("raw embedding response: " + JSON.json(rcr));
-
-        if (rcr.data.size() != 1) {
-            throw new IOException("Chat did not respond with valid embeddings");
-        }
-
-        SimpleEmbeddingResponse ret = new SimpleEmbeddingResponse();
-        ret.embedding = rcr.data.get(0).embedding;
-        ret.promptTokens = rcr.usage.total_tokens;
-        return ret;
+        throw new IllegalArgumentException("unimplemented");
     }
 
     private static DKULogger logger = DKULogger.getLogger("dku.llm.customplugin");
