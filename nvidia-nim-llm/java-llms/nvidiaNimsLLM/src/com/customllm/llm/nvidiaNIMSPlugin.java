@@ -46,36 +46,6 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
     private InternalLLMUsageData usageData = new LLMUsageData();
     HTTPBasedLLMNetworkSettings networkSettings = new HTTPBasedLLMNetworkSettings();
 
-    private static class RawChatCompletionMessage {
-        String role;
-        String content;
-    }
-
-    private static class RawChatCompletionChoice {
-        RawChatCompletionMessage message;
-    }
-
-    private static class RawUsageResponse {
-        int total_tokens;
-        int prompt_tokens;
-        int completion_tokens;
-    }
-
-    private static class RawChatCompletionResponse {
-        List<RawChatCompletionChoice> choices;
-        RawUsageResponse usage;
-    }
-
-    private static class OpenAIEmbeddingResponse {
-        List<OpenAIEmbeddingResult> data = new ArrayList<>();
-        RawUsageResponse usage;
-
-    }
-
-    private static class OpenAIEmbeddingResult {
-        double[] embedding;
-    }
-
     public void init(ResolvedSettings settings) {
 
         this.rs = settings;
@@ -90,7 +60,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
                 HttpGet get = new HttpGet(path);
                 setAdditionalHeadersInRequest(get);
                 get.addHeader("Content-Type", "application/json");
-                get.addHeader("Authorization", access_token);
+                get.addHeader("Authorization", "Bearer " + access_token);
                 return get;
             }
 
@@ -99,7 +69,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
                 HttpPost post = new HttpPost(path);
                 setAdditionalHeadersInRequest(post);
                 post.addHeader("Content-Type", "application/json");
-                post.addHeader("Authorization", access_token);
+                post.addHeader("Authorization", "Bearer " + access_token);
                 return post;
 
             }
@@ -112,21 +82,6 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
             @Override
             protected HttpDelete newDelete(String path) {
                 throw new IllegalArgumentException("unimplemented");
-            }
-
-            @Override
-            protected void customizeBuilder(HttpClientBuilder builder) {
-                CookieStore httpCookieStore = new BasicCookieStore();
-                RequestConfig requestConfig = RequestConfig
-                        .custom()
-                        .setCookieSpec(CookieSpecs.STANDARD)
-                        .build();
-
-                builder.setRedirectStrategy(new LaxRedirectStrategy());
-                builder.setDefaultCookieStore(httpCookieStore);
-                builder.setDefaultRequestConfig(requestConfig);
-                OnlineLLMUtils.add429RetryStrategy(builder, networkSettings);
-
             }
         };
 
