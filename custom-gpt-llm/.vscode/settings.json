@@ -1,0 +1,37 @@
+{
+    "java.project.outputPath": "java-build",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-app-platform.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-core.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-dip.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-dss-core.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-govern-server.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-hproxy-client.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-hproxy-sandbox.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-hproxy-server.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-lambda-server.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-prepare-core.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-scoring.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\dist\\dataiku-server.jar",
+        "e:\\dataiku-dss-12.3.0\\dataiku-dss-12.3.0\\lib\\shadelib\\dss-shadelib-assembly.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\lib\\shadelib\\dss-shadelib-assembly.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-app-platform.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-core.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-dip.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-dss-core.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-govern-server.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-hproxy-client.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-hproxy-sandbox.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-hproxy-server.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-lambda-server.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-prepare-core.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-scoring.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\dist\\dataiku-server.jar",
+        "e:\\dataiku-dss-12.3.0-win\\dataiku-dss-12.3.0-win\\lib\\ivy\\common-run\\gson-2.8.9.jar"
+    ],
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable",
+    "java.project.sourcePaths": [
+        "java-llms/customllm/src"
+    ]
+}

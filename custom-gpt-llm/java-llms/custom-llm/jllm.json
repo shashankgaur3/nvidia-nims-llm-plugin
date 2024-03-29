@@ -1,0 +1,37 @@
+{
+    "id": "custom-llm",
+    "meta": {
+        "label": "Custom LLM"
+    },
+    "params": [
+         {
+            "name": "apikeys",
+            "label": "Keys preset",
+            "type": "PRESET",
+            "parameterSetId": "api-credentials"
+        },
+       
+        {
+            "name": "endpoint_url",
+            "label": "Endpoint URL",
+            "type": "STRING",
+            "defaultValue": "https://customLLM/api/openai",
+            "description": "Assumes '/chat/completion or embedding' endpoint. Don't include /chat/completion at the end of this URL. eg: https://myCustomLLMEndpointServer.mythical.com/gpt/v2",
+            "mandatory": true
+        },
+        {
+            "name": "model",
+            "label": "Model Name",
+            "type": "SELECT",
+            "selectChoices" : [
+                { "value": "gpt-35-turbo-0613", "label": "GPT 3.5 Chat  (Turbo / ChatGPT) {Best overall compromise - $0.002/1K tokens}"},
+                { "value": "gpt-35-turbo-16k-0613", "label": "GPT 3.5 Chat  (Turbo / ChatGPT) (large context) {Best overall compromise - $0.002/1K tokens}"},
+                { "value": "gpt-4-0613", "label": "GPT 4 {$0.03/1K tokens}"},
+                { "value": "gpt-4-32k-0613", "label": "GPT 4 (large context) {$0.06/1K tokens}"}
+            ],
+            "defaultValue": "gpt-35-turbo-0613",
+            "mandatory": true
+        }
+    ],
+    "clientClass": "com.customllm.llm.customLLMPlugin"
+}

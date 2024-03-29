@@ -1,0 +1,27 @@
+{
+    "meta" : {
+        "label": "Merck gpTeal API Keys",
+        "description": "Define a preset that DSS users can use to authenticate themselves on gpTeal. The plugin will work with per-user credentials.",
+        "icon": "icon-cloud"
+    },
+    "defaultDefinableInline": false,
+    "defaultDefinableAtProjectLevel": false,
+    "pluginParams": [
+    ],
+
+    "params": [
+        
+         {
+            "name": "chat_key",
+            "label": "Chat API Key",
+            "type": "CREDENTIAL_REQUEST",
+            "credentialRequestSettings": {
+                "type": "SINGLE_FIELD"
+            },
+            "description": "an API key for Chat access ",
+            "mandatory": true
+
+        }
+        
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "id": "custom-gpt-llm",
+    "version": "0.0.1",
+    "meta": {
+        "label": "Custom LLM",
+        "description": "Connect to an private LLM",
+        "author": "agugliciello",
+        "icon": "icon-cloud",
+        "tags": [], 
+        "url": "",
+        "licenseInfo": "Apache Software License"
+    }
+}
