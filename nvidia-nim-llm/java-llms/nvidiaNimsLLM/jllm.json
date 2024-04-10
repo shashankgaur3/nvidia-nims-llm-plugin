@@ -1,22 +1,22 @@
 {
-    "id": "custom-llm",
+    "id": "nvidia-nim-llm-chat",
     "meta": {
-        "label": "Custom LLM"
+        "label": "Chat Models"
     },
-    "params": [
-         {
-            "name": "apikeys",
-            "label": "Keys preset",
-            "type": "PRESET",
-            "parameterSetId": "api-credentials"
-        },
-       
+    "params": [       
         {
             "name": "endpoint_url",
             "label": "Endpoint URL",
             "type": "STRING",
-            "defaultValue": "https://integrate.api.nvidia.com/v1/",
-            "description": "Assumes '/chat/completion or embedding' endpoint. Don't include /chat/completion at the end of this URL. eg: https://myCustomLLMEndpointServer.mythical.com/gpt/v2",
+            "defaultValue": "https://integrate.api.nvidia.com/v1",
+            "description": "Don't include /chat/completions at the end of this URL. eg: https://myCustomLLMEndpointServer.nvidia.com/v1",
+            "mandatory": true
+        },
+        {
+            "name": "accessToken",
+            "label": "NIM API Key",
+            "type": "PASSWORD",
+            "description": "NVIDIA NIM API key",
             "mandatory": true
         },
         {
@@ -24,14 +24,18 @@
             "label": "Model Name",
             "type": "SELECT",
             "selectChoices" : [
-                { "value": "gpt-35-turbo-0613", "label": "GPT 3.5 Chat  (Turbo / ChatGPT) {Best overall compromise - $0.002/1K tokens}"},
-                { "value": "gpt-35-turbo-16k-0613", "label": "GPT 3.5 Chat  (Turbo / ChatGPT) (large context) {Best overall compromise - $0.002/1K tokens}"},
-                { "value": "gpt-4-0613", "label": "GPT 4 {$0.03/1K tokens}"},
-                { "value": "gpt-4-32k-0613", "label": "GPT 4 (large context) {$0.06/1K tokens}"}
+                { "value": "google/gemma-7b", "label": "Google: Gemma-7b"},
+                { "value": "google/gemma-2b", "label": "Google: Gemma-2b"},
+                { "value": "google/recurrentgemma-2b", "label": "Google: Recurrent Gemma-2b"},
+                { "value": "google/codegemma-7b", "label": "Google: Code Gemma-7b"},
+                { "value": "meta/llama2-70b", "label": "Meta: llama2-70b"},
+                { "value": "meta/codellama-70b", "label": "Meta: Code llama-70b"},
+                { "value": "mistralai/mixtral-8x7b-instruct-v0.1", "label": "MistralAI: Mixtral-8x7b"},
+                { "value": "mistralai/mistral-7b-instruct-v0.2", "label": "MistralAI: Mistral Instruct-7b"}
             ],
-            "defaultValue": "gpt-35-turbo-0613",
+            "defaultValue": "google/gemma-2b",
             "mandatory": true
         }
     ],
-    "clientClass": "com.customllm.llm.customLLMPlugin"
+    "clientClass": "com.customllm.llm.nvidiaNIMSPlugin"
 }

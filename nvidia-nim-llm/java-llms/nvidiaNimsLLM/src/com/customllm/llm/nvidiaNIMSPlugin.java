@@ -17,9 +17,9 @@ import com.dataiku.dip.resourceusage.ComputeResourceUsage;
 import com.dataiku.dip.resourceusage.ComputeResourceUsage.InternalLLMUsageData;
 import com.dataiku.dip.resourceusage.ComputeResourceUsage.LLMUsageData;
 import com.dataiku.dip.resourceusage.ComputeResourceUsage.LLMUsageType;
-import com.dataiku.dss.shadelib.org.apache.http.impl.client.LaxRedirectStrategy;
+//import com.dataiku.dss.shadelib.org.apache.http.impl.client.LaxRedirectStrategy;
 import com.dataiku.dip.connections.AbstractLLMConnection.HTTPBasedLLMNetworkSettings;
-import com.dataiku.dip.llm.utils.OnlineLLMUtils;
+//import com.dataiku.dip.llm.utils.OnlineLLMUtils;
 import com.dataiku.dss.shadelib.org.apache.http.client.CookieStore;
 import com.dataiku.dss.shadelib.org.apache.http.client.config.CookieSpecs;
 import com.dataiku.dss.shadelib.org.apache.http.client.config.RequestConfig;
@@ -46,13 +46,42 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
     private InternalLLMUsageData usageData = new LLMUsageData();
     HTTPBasedLLMNetworkSettings networkSettings = new HTTPBasedLLMNetworkSettings();
 
+    private static class RawChatCompletionMessage {
+        String role;
+        String content;
+    }
+
+    private static class RawChatCompletionChoice {
+        RawChatCompletionMessage message;
+    }
+
+    private static class RawUsageResponse {
+        int total_tokens;
+        int prompt_tokens;
+        int completion_tokens;
+    }
+
+    private static class RawChatCompletionResponse {
+        List<RawChatCompletionChoice> choices;
+        RawUsageResponse usage;
+    }
+
+    private static class OpenAIEmbeddingResponse {
+        List<OpenAIEmbeddingResult> data = new ArrayList<>();
+        RawUsageResponse usage;
+
+    }
+
+    private static class OpenAIEmbeddingResult {
+        double[] embedding;
+    }
+
     public void init(ResolvedSettings settings) {
 
         this.rs = settings;
         endpointUrl = rs.config.get("endpoint_url").getAsString();
         model = rs.config.get("model").getAsString();
-        String access_token = rs.config.get("apikeys").getAsJsonObject().get("chat_key").getAsString();
-         
+        String access_token = "Bearer " + rs.config.get("accessToken").getAsString();
         // TODO: Manage all AuthN/Z
         client = new ExternalJSONAPIClient(endpointUrl, null, true, null) {
             @Override
@@ -60,7 +89,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
                 HttpGet get = new HttpGet(path);
                 setAdditionalHeadersInRequest(get);
                 get.addHeader("Content-Type", "application/json");
-                get.addHeader("Authorization", "Bearer " + access_token);
+                get.addHeader("Authorization", access_token);
                 return get;
             }
 
@@ -69,7 +98,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
                 HttpPost post = new HttpPost(path);
                 setAdditionalHeadersInRequest(post);
                 post.addHeader("Content-Type", "application/json");
-                post.addHeader("Authorization", "Bearer " + access_token);
+                post.addHeader("Authorization", access_token);
                 return post;
 
             }
@@ -83,6 +112,21 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
             protected HttpDelete newDelete(String path) {
                 throw new IllegalArgumentException("unimplemented");
             }
+
+            /* @Override
+            protected void customizeBuilder(HttpClientBuilder builder) {
+                CookieStore httpCookieStore = new BasicCookieStore();
+                RequestConfig requestConfig = RequestConfig
+                        .custom()
+                        .setCookieSpec(CookieSpecs.STANDARD)
+                        .build();
+
+                builder.setRedirectStrategy(new LaxRedirectStrategy());
+                builder.setDefaultCookieStore(httpCookieStore);
+                builder.setDefaultRequestConfig(requestConfig);
+                OnlineLLMUtils.add429RetryStrategy(builder, networkSettings);
+
+            }*/
         };
 
     }
@@ -117,7 +161,8 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
     }
 
     public List<SimpleEmbeddingResponse> embedBatch(List<EmbeddingQuery> queries) throws IOException {
-        List<SimpleEmbeddingResponse> ret = new ArrayList<>();
+        throw new IllegalArgumentException("Not Implemented");
+        /*List<SimpleEmbeddingResponse> ret = new ArrayList<>();
         for (EmbeddingQuery query : queries) {
             long before = System.currentTimeMillis();
 
@@ -134,7 +179,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
 
             ret.add(scr);
         }
-        return ret;
+        return ret;*/
     }
 
     public ComputeResourceUsage getTotalCRU(LLMUsageType usageType, LLMStructuredRef llmRef) {
@@ -152,7 +197,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
         JsonArray jsonMessages = new JsonArray();
 
         messages.forEach(m -> {
-            jsonMessages.add(JF.obj().with("role", m.role).with("content", m.content).get());
+            jsonMessages.add(JF.obj().with("role", m.role).with("content", m.getText()).get());
         });
         ob.with("messages", jsonMessages);
 
@@ -195,7 +240,24 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
     }
 
     public SimpleEmbeddingResponse embed(String model, String text) throws IOException {
-        throw new IllegalArgumentException("unimplemented");
+        throw new IllegalArgumentException("Not Implemented");
+        /*String endpoint = endpointUrl + "/" + model + "/embeddings";
+
+        ObjectBuilder ob = JF.obj().with("input", text).with("model", model);
+
+        logger.info("raw embedding query: " + JSON.json(ob.get()));
+        OpenAIEmbeddingResponse rcr = client.postObjectToJSON(endpoint, networkSettings.queryTimeoutMS,
+                OpenAIEmbeddingResponse.class, ob.get());
+        logger.info("raw embedding response: " + JSON.json(rcr));
+
+        if (rcr.data.size() != 1) {
+            throw new IOException("Chat did not respond with valid embeddings");
+        }
+
+        SimpleEmbeddingResponse ret = new SimpleEmbeddingResponse();
+        ret.embedding = rcr.data.get(0).embedding;
+        ret.promptTokens = rcr.usage.total_tokens;
+        return ret;*/
     }
 
     private static DKULogger logger = DKULogger.getLogger("dku.llm.customplugin");

@@ -11,17 +11,5 @@
 
     "params": [
         
-         {
-            "name": "chat_key",
-            "label": "Chat API Key",
-            "type": "CREDENTIAL_REQUEST",
-            "credentialRequestSettings": {
-                "type": "SINGLE_FIELD"
-            },
-            "description": "an API key for Chat access ",
-            "mandatory": true
-
-        }
-        
     ]
 }
