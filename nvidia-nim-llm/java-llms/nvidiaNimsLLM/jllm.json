@@ -3,20 +3,19 @@
     "meta": {
         "label": "Chat Models"
     },
-    "params": [       
+    "params": [ 
+        {   
+        "name": "apikeys",
+        "label": "Keys preset",
+        "type": "PRESET",
+        "parameterSetId": "api-credentials"
+        },   
         {
             "name": "endpoint_url",
             "label": "Endpoint URL",
             "type": "STRING",
             "defaultValue": "https://integrate.api.nvidia.com/v1",
-            "description": "Don't include /chat/completions at the end of this URL. eg: https://myCustomLLMEndpointServer.nvidia.com/v1",
-            "mandatory": true
-        },
-        {
-            "name": "accessToken",
-            "label": "NIM API Key",
-            "type": "PASSWORD",
-            "description": "NVIDIA NIM API key",
+            "description": "Assumes complete URL for endpoint. eg: https://myCustomLLMEndpointServer.nvidia.com/v1/chat/completeions",
             "mandatory": true
         },
         {
@@ -34,6 +33,41 @@
                 { "value": "mistralai/mistral-7b-instruct-v0.2", "label": "MistralAI: Mistral Instruct-7b"}
             ],
             "defaultValue": "google/gemma-2b",
+            "mandatory": true
+        },
+        {
+            "name": "maxParallelism",
+            "label": "Maximum Parallelism",
+            "type": "INT",
+            "defaultValue": 8,
+            "mandatory": true
+        },
+        {
+            "name": "networkTimeout",
+            "label": "Network Timeout (in milliseconds)",
+            "type": "INT",
+            "defaultValue": 60000,
+            "mandatory": true
+        },
+        {
+            "name": "maxRetries",
+            "label": "Max Retries",
+            "type": "INT",
+            "defaultValue": 3,
+            "mandatory": true
+        },
+        {
+            "name": "firstRetryDelay",
+            "label": "First retry delay (in milliseconds)",
+            "type": "INT",
+            "defaultValue": 3000,
+            "mandatory": true
+        },
+        {
+            "name": "retryDelayScale",
+            "label": "Retry delay scale factor (multiplier per retry)",
+            "type": "INT",
+            "defaultValue": 2,
             "mandatory": true
         }
     ],

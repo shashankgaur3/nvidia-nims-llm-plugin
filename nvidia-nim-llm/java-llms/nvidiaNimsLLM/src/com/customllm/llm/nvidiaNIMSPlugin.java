@@ -3,6 +3,7 @@ package com.customllm.llm;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import com.dataiku.common.rpc.ExternalJSONAPIClient;
 import com.dataiku.dip.custom.PluginSettingsResolver.ResolvedSettings;
 import com.dataiku.dip.llm.custom.CustomLLMClient;
@@ -17,18 +18,14 @@ import com.dataiku.dip.resourceusage.ComputeResourceUsage;
 import com.dataiku.dip.resourceusage.ComputeResourceUsage.InternalLLMUsageData;
 import com.dataiku.dip.resourceusage.ComputeResourceUsage.LLMUsageData;
 import com.dataiku.dip.resourceusage.ComputeResourceUsage.LLMUsageType;
-//import com.dataiku.dss.shadelib.org.apache.http.impl.client.LaxRedirectStrategy;
+import com.dataiku.dss.shadelib.org.apache.http.impl.client.LaxRedirectStrategy;
 import com.dataiku.dip.connections.AbstractLLMConnection.HTTPBasedLLMNetworkSettings;
-//import com.dataiku.dip.llm.utils.OnlineLLMUtils;
-import com.dataiku.dss.shadelib.org.apache.http.client.CookieStore;
-import com.dataiku.dss.shadelib.org.apache.http.client.config.CookieSpecs;
-import com.dataiku.dss.shadelib.org.apache.http.client.config.RequestConfig;
+import com.dataiku.dip.llm.utils.OnlineLLMUtils;
+import com.dataiku.dss.shadelib.org.apache.http.impl.client.HttpClientBuilder;
 import com.dataiku.dss.shadelib.org.apache.http.client.methods.HttpDelete;
 import com.dataiku.dss.shadelib.org.apache.http.client.methods.HttpGet;
 import com.dataiku.dss.shadelib.org.apache.http.client.methods.HttpPost;
 import com.dataiku.dss.shadelib.org.apache.http.client.methods.HttpPut;
-import com.dataiku.dss.shadelib.org.apache.http.impl.client.BasicCookieStore;
-import com.dataiku.dss.shadelib.org.apache.http.impl.client.HttpClientBuilder;
 import com.dataiku.dip.utils.DKULogger;
 import com.dataiku.dip.utils.JSON;
 import com.dataiku.dip.utils.JF;
@@ -45,6 +42,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
     private ExternalJSONAPIClient client;
     private InternalLLMUsageData usageData = new LLMUsageData();
     HTTPBasedLLMNetworkSettings networkSettings = new HTTPBasedLLMNetworkSettings();
+    private int maxParallel=1;
 
     private static class RawChatCompletionMessage {
         String role;
@@ -81,9 +79,22 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
         this.rs = settings;
         endpointUrl = rs.config.get("endpoint_url").getAsString();
         model = rs.config.get("model").getAsString();
-        String access_token = "Bearer " + rs.config.get("accessToken").getAsString();
+        maxParallel = rs.config.get("maxParallelism").getAsNumber().intValue();
+
+
+        networkSettings.queryTimeoutMS = rs.config.get("networkTimeout").getAsNumber().intValue();
+        networkSettings.maxRetries = rs.config.get("maxRetries").getAsNumber().intValue();
+        networkSettings.initialRetryDelayMS = rs.config.get("firstRetryDelay").getAsNumber().longValue();
+        networkSettings.retryDelayScalingFactor = rs.config.get("retryDelayScale").getAsNumber().doubleValue();
+
+        Consumer<HttpClientBuilder> customizeBuilderCallback = (builder) -> {  
+            builder.setRedirectStrategy(new LaxRedirectStrategy());  
+            OnlineLLMUtils.add429RetryStrategy(builder, networkSettings);  
+        };  
+        
+        String access_token = "Bearer " + rs.config.get("apikeys").getAsJsonObject().get("chat_key").getAsString();;
         // TODO: Manage all AuthN/Z
-        client = new ExternalJSONAPIClient(endpointUrl, null, true, null) {
+        client = new ExternalJSONAPIClient(endpointUrl, null, true, null, customizeBuilderCallback)  {
             @Override
             protected HttpGet newGet(String path) {
                 HttpGet get = new HttpGet(path);
@@ -113,20 +124,6 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
                 throw new IllegalArgumentException("unimplemented");
             }
 
-            /* @Override
-            protected void customizeBuilder(HttpClientBuilder builder) {
-                CookieStore httpCookieStore = new BasicCookieStore();
-                RequestConfig requestConfig = RequestConfig
-                        .custom()
-                        .setCookieSpec(CookieSpecs.STANDARD)
-                        .build();
-
-                builder.setRedirectStrategy(new LaxRedirectStrategy());
-                builder.setDefaultCookieStore(httpCookieStore);
-                builder.setDefaultRequestConfig(requestConfig);
-                OnlineLLMUtils.add429RetryStrategy(builder, networkSettings);
-
-            }*/
         };
 
     }
@@ -222,9 +219,8 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
 
         logger.info("Raw Chat chat completion: " + JSON.pretty(ob.get()));
 
-        String endpoint = endpointUrl + "/chat/completions";
-        logger.info("posting to Chat at: " + endpoint);
-        RawChatCompletionResponse rcr = client.postObjectToJSON(endpoint, networkSettings.queryTimeoutMS,
+
+        RawChatCompletionResponse rcr = client.postObjectToJSON(endpointUrl, networkSettings.queryTimeoutMS,
                 RawChatCompletionResponse.class, ob.get());
 
         if (rcr.choices == null || rcr.choices.size() == 0) {
@@ -241,12 +237,12 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
 
     public SimpleEmbeddingResponse embed(String model, String text) throws IOException {
         throw new IllegalArgumentException("Not Implemented");
-        /*String endpoint = endpointUrl + "/" + model + "/embeddings";
+        /*
 
         ObjectBuilder ob = JF.obj().with("input", text).with("model", model);
 
         logger.info("raw embedding query: " + JSON.json(ob.get()));
-        OpenAIEmbeddingResponse rcr = client.postObjectToJSON(endpoint, networkSettings.queryTimeoutMS,
+        OpenAIEmbeddingResponse rcr = client.postObjectToJSON(endpointUrl, networkSettings.queryTimeoutMS,
                 OpenAIEmbeddingResponse.class, ob.get());
         logger.info("raw embedding response: " + JSON.json(rcr));
 
