@@ -12,7 +12,6 @@ import com.dataiku.dip.llm.online.LLMClient.CompletionQuery;
 import com.dataiku.dip.llm.online.LLMClient.EmbeddingQuery;
 import com.dataiku.dip.llm.online.LLMClient.SimpleCompletionResponse;
 import com.dataiku.dip.llm.online.LLMClient.SimpleEmbeddingResponse;
-import com.dataiku.dip.llm.online.openai.OpenAIPricing;
 import com.dataiku.dip.llm.promptstudio.PromptStudio.LLMStructuredRef;
 import com.dataiku.dip.resourceusage.ComputeResourceUsage;
 import com.dataiku.dip.resourceusage.ComputeResourceUsage.InternalLLMUsageData;
@@ -64,13 +63,13 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
         RawUsageResponse usage;
     }
 
-    private static class OpenAIEmbeddingResponse {
-        List<OpenAIEmbeddingResult> data = new ArrayList<>();
+    private static class EmbeddingResponse {
+        List<EmbeddingResult> data = new ArrayList<>();
         RawUsageResponse usage;
 
     }
 
-    private static class OpenAIEmbeddingResult {
+    private static class EmbeddingResult {
         double[] embedding;
     }
 
@@ -129,7 +128,8 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
     }
 
     public int getMaxParallelism() {
-        return 1;
+        int maxParallel = rs.config.get("maxParallelism").getAsNumber().intValue();
+        return maxParallel;
     }
 
     public synchronized List<SimpleCompletionResponse> completeBatch(List<CompletionQuery> completionQueries)
@@ -143,13 +143,13 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
             logger.info("Chat Complete: " + JSON.json(query));
             scr = chatComplete(model, query.messages, query.settings.maxOutputTokens, query.settings.temperature,
                     query.settings.topP, query.settings.stopSequences);
-            scr.estimatedCost = (OpenAIPricing.getOpenAIPromptCostPer1KTokens(model) * scr.promptTokens
-                    + OpenAIPricing.getOpenAICompletionCostPer1KTokens(model) * scr.completionTokens) / 1000;
+            //scr.estimatedCost = (OpenAIPricing.getOpenAIPromptCostPer1KTokens(model) * scr.promptTokens
+              //      + OpenAIPricing.getOpenAICompletionCostPer1KTokens(model) * scr.completionTokens) / 1000;
 
             usageData.totalComputationTimeMS += (System.currentTimeMillis() - before);
             usageData.totalPromptTokens += scr.promptTokens;
             usageData.totalCompletionTokens += scr.completionTokens;
-            usageData.estimatedCostUSD += scr.estimatedCost;
+            //usageData.estimatedCostUSD += scr.estimatedCost;
 
             ret.add(scr);
         }
@@ -157,26 +157,28 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
         return ret;
     }
 
-    public List<SimpleEmbeddingResponse> embedBatch(List<EmbeddingQuery> queries) throws IOException {
-        throw new IllegalArgumentException("Not Implemented");
-        /*List<SimpleEmbeddingResponse> ret = new ArrayList<>();
+    public List<SimpleEmbeddingResponse> embedBatch(List<EmbeddingQuery> queries) 
+            throws IOException {
+        
+        List<SimpleEmbeddingResponse> ret = new ArrayList<>();
+
         for (EmbeddingQuery query : queries) {
             long before = System.currentTimeMillis();
 
             logger.info("Chat Embed: " + JSON.json(query));
 
-            SimpleEmbeddingResponse scr = embed("text-embedding-ada-002-2",
-                    query.text);
+            SimpleEmbeddingResponse ser = null;
+            ser = embed(model,query.text);
 
-            scr.estimatedCost = (OpenAIPricing.getOpenAIEmbeddingCostPer1KTokens(model) * scr.promptTokens) / 1000;
+            //ser.estimatedCost = (OpenAIPricing.getOpenAIEmbeddingCostPer1KTokens(model) * scr.promptTokens) / 1000;
 
             usageData.totalComputationTimeMS += (System.currentTimeMillis() - before);
-            usageData.totalPromptTokens += scr.promptTokens;
-            usageData.estimatedCostUSD += scr.estimatedCost;
+            usageData.totalPromptTokens += ser.promptTokens;
+            //usageData.estimatedCostUSD += ser.estimatedCost;
 
-            ret.add(scr);
+            ret.add(ser);
         }
-        return ret;*/
+        return ret;
     }
 
     public ComputeResourceUsage getTotalCRU(LLMUsageType usageType, LLMStructuredRef llmRef) {
@@ -235,25 +237,23 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
         return ret;
     }
 
-    public SimpleEmbeddingResponse embed(String model, String text) throws IOException {
-        throw new IllegalArgumentException("Not Implemented");
-        /*
-
+    public SimpleEmbeddingResponse embed(String model, String text) 
+    throws IOException {
+        
         ObjectBuilder ob = JF.obj().with("input", text).with("model", model);
 
         logger.info("raw embedding query: " + JSON.json(ob.get()));
-        OpenAIEmbeddingResponse rcr = client.postObjectToJSON(endpointUrl, networkSettings.queryTimeoutMS,
-                OpenAIEmbeddingResponse.class, ob.get());
-        logger.info("raw embedding response: " + JSON.json(rcr));
+        EmbeddingResponse rer = client.postObjectToJSON(endpointUrl, networkSettings.queryTimeoutMS,EmbeddingResponse.class, ob.get());
+        logger.info("raw embedding response: " + JSON.json(rer));
 
-        if (rcr.data.size() != 1) {
+        if (rer.data.size() != 1) {
             throw new IOException("Chat did not respond with valid embeddings");
         }
 
         SimpleEmbeddingResponse ret = new SimpleEmbeddingResponse();
-        ret.embedding = rcr.data.get(0).embedding;
-        ret.promptTokens = rcr.usage.total_tokens;
-        return ret;*/
+        ret.embedding = rer.data.get(0).embedding;
+        ret.promptTokens = rer.usage.total_tokens;
+        return ret;
     }
 
     private static DKULogger logger = DKULogger.getLogger("dku.llm.customplugin");

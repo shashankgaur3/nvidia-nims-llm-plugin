@@ -14,24 +14,14 @@
             "name": "endpoint_url",
             "label": "Endpoint URL",
             "type": "STRING",
-            "defaultValue": "https://integrate.api.nvidia.com/v1",
-            "description": "Assumes complete URL for endpoint. eg: https://myCustomLLMEndpointServer.nvidia.com/v1/chat/completeions",
+            "defaultValue": "https://integrate.api.nvidia.com/v1/chat/completions",
+            "description": "Assumes complete URL for e.g. Chat endpoint --> https://integrate.api.nvidia.com/v1/chat/completions and Embedding endpoint --> https://ai.api.nvidia.com/v1/retrieval/nvidia/embeddings ",
             "mandatory": true
         },
         {
             "name": "model",
-            "label": "Model Name",
-            "type": "SELECT",
-            "selectChoices" : [
-                { "value": "google/gemma-7b", "label": "Google: Gemma-7b"},
-                { "value": "google/gemma-2b", "label": "Google: Gemma-2b"},
-                { "value": "google/recurrentgemma-2b", "label": "Google: Recurrent Gemma-2b"},
-                { "value": "google/codegemma-7b", "label": "Google: Code Gemma-7b"},
-                { "value": "meta/llama2-70b", "label": "Meta: llama2-70b"},
-                { "value": "meta/codellama-70b", "label": "Meta: Code llama-70b"},
-                { "value": "mistralai/mixtral-8x7b-instruct-v0.1", "label": "MistralAI: Mixtral-8x7b"},
-                { "value": "mistralai/mistral-7b-instruct-v0.2", "label": "MistralAI: Mistral Instruct-7b"}
-            ],
+            "label": "Model Key",
+            "type": "STRING",
             "defaultValue": "google/gemma-2b",
             "mandatory": true
         },

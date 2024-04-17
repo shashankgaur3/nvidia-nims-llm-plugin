@@ -1,6 +1,6 @@
 {
     "meta" : {
-        "label": "GPT API Keys",
+        "label": "NIM API Keys",
         "description": "Define a preset that DSS users can use to authenticate themselves on the custom endpoint. The plugin will work with per-user credentials.",
         "icon": "icon-cloud"
     },
@@ -12,13 +12,13 @@
     "params": [
         
          {
-            "name": "chat_key",
+            "name": "api_key",
             "label": "Chat API Key",
             "type": "CREDENTIAL_REQUEST",
             "credentialRequestSettings": {
                 "type": "SINGLE_FIELD"
             },
-            "description": "an API key for Chat access ",
+            "description": "an authentication key for NIM API access ",
             "mandatory": true
 
         }
