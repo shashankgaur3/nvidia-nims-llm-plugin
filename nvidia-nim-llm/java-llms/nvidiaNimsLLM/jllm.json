@@ -1,7 +1,7 @@
 {
     "id": "nvidia-nim-llm-chat",
     "meta": {
-        "label": "Chat Models"
+        "label": "Models"
     },
     "params": [ 
         {   
