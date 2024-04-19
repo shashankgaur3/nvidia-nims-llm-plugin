@@ -240,7 +240,8 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
     public SimpleEmbeddingResponse embed(String model, String text) 
     throws IOException {
         
-        ObjectBuilder ob = JF.obj().with("input", text).with("model", model);
+        String input_type = "query";
+        ObjectBuilder ob = JF.obj().with("input", text).with("model", model).with("input_type",input_type);
 
         logger.info("raw embedding query: " + JSON.json(ob.get()));
         EmbeddingResponse rer = client.postObjectToJSON(endpointUrl, networkSettings.queryTimeoutMS,EmbeddingResponse.class, ob.get());

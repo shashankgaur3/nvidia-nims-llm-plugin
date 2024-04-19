@@ -1,8 +1,5 @@
 {
     "id": "nvidia-nim-llm-chat",
-    "meta": {
-        "label": "Models"
-    },
     "params": [ 
         {   
         "name": "apikeys",
