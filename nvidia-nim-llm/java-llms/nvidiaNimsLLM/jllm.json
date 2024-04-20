@@ -1,5 +1,8 @@
 {
     "id": "nvidia-nim-llm-chat",
+    "meta": {
+        "label": "NVIDIA NIM LLM Connector"
+    },
     "params": [ 
         {   
         "name": "apikeys",
@@ -19,6 +22,7 @@
             "name": "model",
             "label": "Model Key",
             "type": "STRING",
+            "description": "Model value supported by the API endpoint. For reference visit: https://build.nvidia.com/explore/discover",
             "defaultValue": "google/gemma-2b",
             "mandatory": true
         },
@@ -31,8 +35,9 @@
         },
         {
             "name": "networkTimeout",
-            "label": "Network Timeout (in milliseconds)",
+            "label": "Network Timeout",
             "type": "INT",
+            "description": "(in milliseconds)",
             "defaultValue": 60000,
             "mandatory": true
         },
@@ -45,17 +50,31 @@
         },
         {
             "name": "firstRetryDelay",
-            "label": "First retry delay (in milliseconds)",
+            "label": "First Retry Delay",
             "type": "INT",
             "defaultValue": 3000,
+            "description": "(in milliseconds)",
             "mandatory": true
         },
         {
             "name": "retryDelayScale",
-            "label": "Retry delay scale factor (multiplier per retry)",
+            "label": "Retry Delay Scale Factor",
             "type": "INT",
             "defaultValue": 2,
+            "description": "(multiplier per retry)",
             "mandatory": true
+        },
+        {
+            "name": "inputType",
+            "label": "Input Type",
+            "description": "Input Type for embedding model only",
+            "type": "SELECT",
+            "selectChoices" : [
+                { "value": "query", "label": "query"},
+                { "value": "passage", "label": "passage"}
+            ],
+            "defaultValue": "query",
+            "mandatory": false
         }
     ],
     "clientClass": "com.customllm.llm.nvidiaNIMSPlugin"

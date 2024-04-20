@@ -37,6 +37,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
 
     private String endpointUrl;
     private String model;
+    private String inputType;
     ResolvedSettings rs;
     private ExternalJSONAPIClient client;
     private InternalLLMUsageData usageData = new LLMUsageData();
@@ -78,6 +79,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
         this.rs = settings;
         endpointUrl = rs.config.get("endpoint_url").getAsString();
         model = rs.config.get("model").getAsString();
+        inputType = rs.config.get("inputType").getAsString();
         maxParallel = rs.config.get("maxParallelism").getAsNumber().intValue();
 
 
@@ -91,7 +93,13 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
             OnlineLLMUtils.add429RetryStrategy(builder, networkSettings);  
         };  
         
-        String access_token = "Bearer " + rs.config.get("apikeys").getAsJsonObject().get("api_key").getAsString();;
+        Boolean usePerUserCreds = rs.config.get("usePerUser");
+        String credsKey = "api_key";
+        if (!usePerUserCreds) {
+            credsKey = "conn_api_key";  
+        } 
+        
+        String access_token = "Bearer " + rs.config.get("apikeys").getAsJsonObject().get(credsKey).getAsString();
         // TODO: Manage all AuthN/Z
         client = new ExternalJSONAPIClient(endpointUrl, null, true, null, customizeBuilderCallback)  {
             @Override
@@ -128,7 +136,6 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
     }
 
     public int getMaxParallelism() {
-        int maxParallel = rs.config.get("maxParallelism").getAsNumber().intValue();
         return maxParallel;
     }
 
@@ -168,7 +175,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
             logger.info("Chat Embed: " + JSON.json(query));
 
             SimpleEmbeddingResponse ser = null;
-            ser = embed(model,query.text);
+            ser = embed(model,query.text,inputType);
 
             //ser.estimatedCost = (OpenAIPricing.getOpenAIEmbeddingCostPer1KTokens(model) * scr.promptTokens) / 1000;
 
@@ -237,11 +244,14 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
         return ret;
     }
 
-    public SimpleEmbeddingResponse embed(String model, String text) 
+    public SimpleEmbeddingResponse embed(String model, String text, String inputType) 
     throws IOException {
         
-        String input_type = "query";
-        ObjectBuilder ob = JF.obj().with("input", text).with("model", model).with("input_type",input_type);
+        if (inputType.isEmpty()) {
+           inputType = "query";
+        }
+
+        ObjectBuilder ob = JF.obj().with("input", text).with("model", model).with("input_type",inputType);
 
         logger.info("raw embedding query: " + JSON.json(ob.get()));
         EmbeddingResponse rer = client.postObjectToJSON(endpointUrl, networkSettings.queryTimeoutMS,EmbeddingResponse.class, ob.get());

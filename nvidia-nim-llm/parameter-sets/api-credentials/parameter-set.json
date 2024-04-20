@@ -4,21 +4,39 @@
         "description": "Define a preset that DSS users can use to authenticate themselves on the custom endpoint. The plugin will work with per-user credentials.",
         "icon": "icon-cloud"
     },
-    "defaultDefinableInline": false,
-    "defaultDefinableAtProjectLevel": false,
+    "defaultDefinableInline": true,
+    "defaultDefinableAtProjectLevel": true,
     "pluginParams": [
     ],
 
     "params": [
         
          {
+            "name": "usePerUser",
+            "label": "Use Per User Credential",
+            "type": "BOOLEAN",
+            "defaultValue": false,
+            "mandatory": true
+
+        },
+        {
+            "name": "conn_api_key",
+            "label": "API Key",
+            "type": "PASSWORD",
+            "description": "Authentication key for NIM API access ",
+            "visibilityCondition": "!model.usePerUser",
+            "mandatory": true
+
+        },
+        {
             "name": "api_key",
-            "label": "Chat API Key",
+            "label": "API Key",
             "type": "CREDENTIAL_REQUEST",
             "credentialRequestSettings": {
                 "type": "SINGLE_FIELD"
             },
             "description": "an authentication key for NIM API access ",
+            "visibilityCondition": "model.usePerUser",
             "mandatory": true
 
         }
