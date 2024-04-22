@@ -93,13 +93,7 @@ public class nvidiaNIMSPlugin extends CustomLLMClient {
             OnlineLLMUtils.add429RetryStrategy(builder, networkSettings);  
         };  
         
-        Boolean usePerUserCreds = rs.config.get("usePerUser").getAsBoolean();
-        String credsKey = "api_key";
-        if (!usePerUserCreds) {
-            credsKey = "conn_api_key";  
-        } 
-
-        String access_token = "Bearer " + rs.config.get("apikeys").getAsJsonObject().get(credsKey).getAsString();
+        String access_token = "Bearer " + rs.config.get("apikeys").getAsJsonObject().get("api_key").getAsString();
         // TODO: Manage all AuthN/Z
         client = new ExternalJSONAPIClient(endpointUrl, null, true, null, customizeBuilderCallback)  {
             @Override
